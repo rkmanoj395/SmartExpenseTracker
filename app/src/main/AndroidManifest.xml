@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Internet for Gemini AI Categorization -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- SMS Permissions for direct SMS fallback -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <!-- Notification Permission for Android 13+ daily reminders -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:label="AI Expense Tracker"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.DeviceDefault.DayNight">
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Universal Notification Listener: Captures notifications from SMS and ALL apps (GPay, PhonePe, Paytm, Banks) -->
+        <service
+            android:name=".service.TransactionNotificationListenerService"
+            android:exported="true"
+            android:label="AI Transaction Auto-Tracker"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Direct SMS BroadcastReceiver Fallback -->
+        <receiver
+            android:name=".service.SmsBroadcastReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Homescreen Widget Receiver (Cumulative Bank Balance & Credit Card Due) -->
+        <receiver
+            android:name=".widget.FinanceWidgetReceiver"
+            android:exported="true"
+            android:label="Balance &amp; Credit Card Due">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/finance_widget_info" />
+        </receiver>
+
+    </application>
+
+</manifest>
